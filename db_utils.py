@@ -52,15 +52,77 @@ class DataTransform:
       df['member_id'] = df['member_id'].astype('object')
       df['term'].str.replace(" months ", "")
       df.rename(columns={"term": "term(mths)"})
-      df['issue_date'] = pd.to_datetime(df['issue_date']).dt.date
-      df['earliest_credit_line'] = pd.to_datetime(df['earliest_credit_line']).dt.date
-      #df['mths_since_last_delinq'] = df['mths_since_last_delinq'].astype('int64')
-      #df['mths_since_last_record'] = df['mths_since_last_record'].astype('int64')
-      df['last_payment_date'] = pd.to_datetime(df['last_payment_date']).dt.date
-      df['next_payment_date'] = pd.to_datetime(df['next_payment_date']).dt.date
-      df['last_credit_pull_date'] = pd.to_datetime(df['last_credit_pull_date']).dt.date
-      #df['collections_12_mths_ex_med'] = df['collections_12_mths_ex_med'].astype('int64')
-      print(df)
+      df['issue_date'] = pd.to_datetime(df['issue_date'],dayfirst=False, format="mixed")
+      df['earliest_credit_line'] = pd.to_datetime(df['earliest_credit_line'],dayfirst=False, format="mixed")
+
+      df['mths_since_last_delinq'].replace('N/A',np.NaN)
+      df['mths_since_last_record'].replace('N/A',np.NaN)
+      df['collections_12_mths_ex_med'].replace('N/A',np.NaN) 
+      df['mths_since_last_major_derog'].replace('N/A',np.NaN)
+
+      df['mths_since_last_delinq'].replace(' ',np.NaN)
+      df['mths_since_last_record'].replace(' ',np.NaN)
+      df['collections_12_mths_ex_med'].replace(' ',np.NaN) 
+      df['mths_since_last_major_derog'].replace(' ',np.NaN)
+
+      df['mths_since_last_delinq'] = df['mths_since_last_delinq'].astype('float64')
+      df['mths_since_last_record'] = df['mths_since_last_record'].astype('float64')
+      df['collections_12_mths_ex_med'] = df['collections_12_mths_ex_med'].astype('float64')
+      df['mths_since_last_major_derog'] = df['mths_since_last_major_derog'].astype('float64')
+
+      df['last_payment_date'] = pd.to_datetime(df['last_payment_date'],dayfirst=False, format="mixed")
+      df['next_payment_date'] = pd.to_datetime(df['next_payment_date'],dayfirst=False, format="mixed")
+      df['last_credit_pull_date'] = pd.to_datetime(df['last_credit_pull_date'],dayfirst=False, format="mixed")
+      
+      #print(df)
+      #return df
+
+   def describe_dataframe(self, file_name):
+
+      df_stats = self.set_data_frame(file_name)
+      print(df_stats)
+
+   def df_shape(self, file_name):
+      df = self.set_data_frame(file_name)
+      print(df.shape)
+
+   def store_stats(self,file_name):
+      pass
+
+   def count_distinct(self,file_name):
+      df = self.set_data_frame(file_name)
+
+      app_type_counts = df['application_type'].value_counts()
+      loan_status_counts = df['loan_status'].value_counts()
+      ver_status_counts = df['verification_status'].value_counts()
+      home_own_counts = df['home_ownership'].value_counts()
+      purpose_counts = df['home_ownership'].value_counts()
+
+      print("unique application types: " + str(app_type_counts.count()))
+      print("unique loan statuses: " + str(loan_status_counts.count()))
+      print("unique verification statuses: " + str(ver_status_counts.count()))
+      print("unique home ownership statuses: " + str(ver_status_counts.count()))
+      print("unique purposes : " + str(ver_status_counts.count()))
+
+   def null_values(self,file_name):
+      pass
+
+   def display_percentiles(self,file_name):
+      pass
+
+   def averages_sd_var(self,file_name):
+      pass
+
+
+
+
+
+#       Describe all columns in the DataFrame to check their data types
+# Extract statistical values: median, standard deviation and mean from the columns and the DataFrame
+# Count distinct values in categorical columns
+# Print out the shape of the DataFrame
+# Generate a count/percentage count of NULL values in each column
+# Any other methods you may find useful
 
       
 
@@ -70,6 +132,9 @@ if __name__ == "__main__":
    #data = RDSDatabaseConnector()
    dataframe = DataTransform()
    df = dataframe.fix_data_types('loan_payments.csv')
+   dataframe.describe_dataframe('loan_payments.csv')
+   dataframe.count_distinct('loan_payments.csv')
+   dataframe.df_shape('loan_payments.csv')
    
    
 
