@@ -2,6 +2,7 @@ import yaml
 import sqlalchemy
 import pandas as pd
 import numpy as np
+import missingno as msno
 from psycopg2 import errors
 from sqlalchemy import create_engine
 from sqlalchemy import inspect
@@ -73,10 +74,8 @@ class DataTransform:
       df['last_payment_date'] = pd.to_datetime(df['last_payment_date'],dayfirst=False, format="mixed")
       df['next_payment_date'] = pd.to_datetime(df['next_payment_date'],dayfirst=False, format="mixed")
       df['last_credit_pull_date'] = pd.to_datetime(df['last_credit_pull_date'],dayfirst=False, format="mixed")
-      
-      #print(df.dtypes)
-      #print(df)
-      #return df
+     
+      return df
 
 class DataFrameInfo:
    
@@ -85,21 +84,20 @@ class DataFrameInfo:
       df_stats = self.set_data_frame(file_name)
       print(df_stats)
 
+
    def df_shape(self, file_name):
       #prints the shape of the dataframe
       df = self.set_data_frame(file_name)
       print(df.shape)
 
+
    def store_stats(self,file_name):
       #computes statistics for numerical columns
 
       df = self.set_data_frame(file_name)
-      # for column in df:
-      #    if df[column].dtype == 'int64' or df[column].dtype == 'float64':
-      #       quant_cols.append(column)
-      
       stats = df.describe(include=np.number).applymap(lambda x: f"{x:0.2f}")
       print(stats)
+
 
    def count_distinct(self,file_name):
       #finds the number of unique entries for columns with categorical data
@@ -138,32 +136,49 @@ class DataFrameTransform:
          #print(df.dtypes)
          return df
 
-      def null_values(self,file_name):
+
+      def Nullremoval(self, file_name):
          df = self.set_data_frame(file_name)
+
+         toRemove = []
          null_values = df.isna().sum() 
          pcnt_null = null_values/df.shape[0] * 100
-         print(pcnt_null)
+         
+         for i in pcnt_null.index:
+            if pcnt_null[i] >60:
+               toRemove.append(i)
+         for i in toRemove:
+            df.drop(i, axis=1, inplace=True)
+         print(df)
 
 
-      def Nullremoval(self):
-         pass
          
 
 class Plotter:
-      pass
-# Any other methods you may find useful
+      
+      def seenulls(self, df):
+
+         msno.bar(df)
+
+      def heatmapnulls(self, df):
+         
+         msno.heatmap(df)
+
+      def impute_nulls(self,df):
+         pass
 
 
 if __name__ == "__main__":
 
    #data = RDSDatabaseConnector()
    dataframe = DataTransform()
-   #df = dataframe.fix_data_types('loan_payments.csv')
+   df = dataframe.fix_data_types('loan_payments.csv')
    #dataframe.describe_dataframe('loan_payments.csv')
    #dataframe.count_distinct('loan_payments.csv')
    #dataframe.df_shape('loan_payments.csv')
    #dataframe.store_stats('loan_payments.csv')
-   dataframe.null_values('loan_payments.csv')
+   #dataframe.null_values('loan_payments.csv')
+   #dataframe.Nullremoval('loan_payments.csv')
    
    
    
