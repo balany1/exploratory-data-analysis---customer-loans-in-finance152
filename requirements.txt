@@ -3,3 +3,6 @@ sqlalchemy
 psycopg2
 pandas
 numpy
+plotly
+missingno
+seaborn
