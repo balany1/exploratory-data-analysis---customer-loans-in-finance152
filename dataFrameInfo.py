@@ -6,6 +6,8 @@ import missingno as msno
 from psycopg2 import errors
 from sqlalchemy import create_engine
 from sqlalchemy import inspect
+from pandas.api.types import is_float_dtype
+from pandas.api.types import is_int64_dtype
 
 class Data_FrameInfo:
    
@@ -27,28 +29,62 @@ class Data_FrameInfo:
       stats = df.describe(include=np.number).applymap(lambda x: f"{x:0.2f}")
       print(stats)
 
+   def get_mean(self,df:pd.DataFrame, column: str):
 
-   def count_distinct(self, column):
-      #finds the number of unique entries for columns with categorical data
+      '''
+      Gets mean of specified column
+
+      Args:
+         df(pd.DataFrame) : dataframe containing the column required
+         column(str): Column to be aggreagted
+      '''
+
+      if is_float_dtype(df[column]) == True or is_int64_dtype(df[column]) == True:
+         mean = df.loc[:, column].mean()
+
+      print("%.2f"% mean)
+
+   def get_median(self,df:pd.DataFrame, column: str):
+      
+      '''
+      Gets median of specified column
+
+      Args:
+         df(pd.DataFrame) : dataframe containing the column required
+         column(str): Column to be aggreagted
+      '''
+
+      if is_float_dtype(df[column]) == True or is_int64_dtype(df[column]) == True:
+         median = df.loc[:, column].median()
+
+      print("%.2f"% median)
+
+   def get_sd(self,df:pd.DataFrame, column: str):
+      '''
+      Gets standard deviation of specified column
+
+      Args:
+         df(pd.DataFrame) : dataframe containing the column required
+         column(str): Column to be aggreagted
+      '''
+
+      if is_float_dtype(df[column]) == True or is_int64_dtype(df[column]) == True:
+         stdev = df.loc[:, column].std()
+
+      print("%.2f"% stdev)
 
 
-      # app_type_counts = df['application_type'].value_counts()
-      # loan_status_counts = df['loan_status'].value_counts()
-      # ver_status_counts = df['verification_status'].value_counts()
-      # home_own_counts = df['home_ownership'].value_counts()
-      # purpose_counts = df['home_ownership'].value_counts()
-      # grade_counts = df['grade'].value_counts()
-      # subgrade_counts = df['subgrade'].value_counts()
+   def count_distinct(self, df: pd.DataFrame, column: str):
+      '''
+      Counts number of distinct values in a particular column and returns it
 
-      # print("unique application types: " + str(app_type_counts.count()))
-      # print("unique loan statuses: " + str(loan_status_counts.count()))
-      # print("unique verification statuses: " + str(ver_status_counts.count()))
-      # print("unique home ownership statuses: " + str(ver_status_counts.count()))
-      # print("unique purposes : " + str(ver_status_counts.count()))
-      # print("unique grades : " + str(ver_status_counts.count()))
-      # print("unique subgrades : " + str(ver_status_counts.count()))
+      Args:
+            df (pd.DataFrame): DataFrame Object being worked on
+            column (str): column for which count is required
+      '''
 
-      print("unique f{column} values" + str(df[column].value_counts().count()))
+      print(f"unique {column} values: " + str(df[column].value_counts().count()))
+
 
    def null_values(self,file_name):
       df = self.set_data_frame(file_name)

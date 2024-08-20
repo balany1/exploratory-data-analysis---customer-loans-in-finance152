@@ -3,7 +3,7 @@ import pandas as pd
 class Data_FrameTransform:
 
 
-      def Nullremoval(self, df: pd.dataframe, pct: int):
+      def Nullremoval(self, df: pd.DataFrame, pct: int):
 
          '''
         This method is used to drop columns where the percentage of missing values is above an amount specified by the user.
@@ -36,3 +36,19 @@ class Data_FrameTransform:
          print(df)
 
          return df
+      
+      def impute_null_values(self, df:pd.DataFrame):         
+        '''This method imputes null values in the DataFrame.
+              
+        Returns:
+        --------
+        dataframe
+            A Pandas DataFrame
+        '''
+        for col in df:
+
+            if df[col].dtype == 'category':
+                df[col] = df[col].fillna(df[col].mode()[0])
+
+            elif df[col].dtype == 'float64' or df[col].dtype == 'Int64' or df[col].dtype == 'int64' or df[col].dtype==  'object':
+                df[col] = df[col].fillna(df[col].median())
