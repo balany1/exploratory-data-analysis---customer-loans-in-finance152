@@ -91,3 +91,38 @@ class Data_FrameInfo:
       null_values = df.isna().sum() 
       pcnt_null = null_values/df.shape[0] * 100
       print(pcnt_null)
+
+   def get_skew_info(self, df: pd.DataFrame):
+      '''
+      Gets the skew value for every compatible column in the dataframe
+
+      Args:
+         df(pd.DataFrame): Dataframe being worked on
+      '''
+
+      for col in df:
+         if df[col].dtype == 'float64' or df[col].dtype == 'Int64' or df[col].dtype == 'int64':
+            print(f"Skew of {col} is {df[col].skew()}")
+
+   def find_high_skew_cols(self, df:pd.DataFrame, skew_limit: int = 5):
+      
+      '''
+      Gets the skew value for every compatible column in the dataframe
+
+      Args:
+         df(pd.DataFrame): Dataframe being worked on
+
+      Returns:
+        --------
+        high_skew_cols
+            A list of high skew columns
+      '''
+
+      high_skew_cols = []
+      
+      for col in df: 
+         if df[col].dtype == 'float64' or df[col].dtype == 'Int64' or df[col].dtype == 'int64':
+            if df[col].skew() > skew_limit:
+               high_skew_cols.append(col)
+      
+      return high_skew_cols

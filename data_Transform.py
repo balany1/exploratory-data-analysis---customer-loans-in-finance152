@@ -3,6 +3,8 @@ import sqlalchemy
 import pandas as pd
 import numpy as np
 import missingno as msno
+import seaborn as sns
+from scipy.stats import yeojohnson
 from psycopg2 import errors
 from sqlalchemy import create_engine
 from sqlalchemy import inspect
@@ -61,4 +63,16 @@ class DataTransform:
     def fill_blanks(df, column):
       df[column]=  df[column].replace('N/A',np.NaN)
       df[column] = df[column].replace(' ',np.NaN)
+
+    def log_transform_skewed_columns(self,df):
+      log_population = df["Population"].map(lambda i: np.log(i) if i > 0 else 0)
+      t=sns.histplot(log_population,label="Skewness: %.2f"%(log_population.skew()) )
+      t.legend()
+
+    def yjt_transform_skewed_columns(self,df):
+      yeojohnson_population = df["Population"]
+      yeojohnson_population = yeojohnson(yeojohnson_population)
+      yeojohnson_population= pd.Series(yeojohnson_population[0])
+      t=sns.histplot(yeojohnson_population,label="Skewness: %.2f"%(yeojohnson_population.skew()) )
+      t.legend()
     
