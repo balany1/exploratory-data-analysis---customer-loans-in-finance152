@@ -152,7 +152,30 @@ class Plotter:
         plt.suptitle(column_name, fontsize='xx-large') # Add large title for entire plot.
         plt.tight_layout() # Adjust the padding between and around subplots.
         return plt.show()
-    
+   
+   def visualise_outliers(self, df:pd.DataFrame):
+        '''This method visualises the data to determine if the columns contain outliers. It uses Seaborn's Boxplot to achieve this.       
+              
+        Returns:
+        --------
+        plot
+            Seaborn's Boxplot.
+        ''' 
+        #select only the numeric columns in the DataFrame
+        df = df.select_dtypes(include=['float64'])
+        plt.figure(figsize=(18,14))
+
+        for i in list(enumerate(df.columns)):
+            fig_cols = 4
+            fig_rows = int(len(df.columns)/fig_cols) + 1
+            plt.subplot(fig_rows, fig_cols, i[0]+1)
+            sns.boxplot(data=df[i[1]]) 
+
+        # Show the plot
+        plt.tight_layout()
+        return plt.show()
+
+
 if __name__ == "__main__":
        
      

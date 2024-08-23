@@ -63,9 +63,6 @@ class Data_FrameTransform:
             elif df[col].dtype == 'float64' or df[col].dtype == 'Int64' or df[col].dtype == 'int64' or df[col].dtype==  'object':
                 df[col] = df[col].fillna(df[col].median())
 
-    def apply_skew_transform(self,df:pd.DataFrame):
-
-        pass
 
     def log_transform_skewed_columns(self,df):
       
@@ -75,20 +72,66 @@ class Data_FrameTransform:
           t=sns.histplot(log_col,label="Skewness: %.2f"%(log_col.skew()) )
           t.legend()
 
-    def yjt_transform_skewed_columns(self, df:pd.DataFrame):
-      
-        cols_to_transform = df.select_dtypes(['float64','Int64','int64'])
+    def transform_column(self, df, column_name, method='yeo-johnson', inverse_transform=False):
+        '''
+        Apply Yeo-Johnson or Box-Cox transformation to a specified column in a DataFrame.
         
-        # Model Creation
-        p_scaler = PowerTransformer(method='yeo-johnson')
-        # yeojohnTr = PowerTransformer(standardize=True)   # not using method attribute as yeo-johnson is the default
+        Parameters:
+        - df (DataFrame): Input DataFrame
+        - column_name (str): Name of the column to be transformed
+        - method (str): Transformation method ('yeo-johnson' or 'box-cox')
+        - inverse_transform (bool): Whether to apply the inverse transformation
+        
+        Returns:
+        - DataFrame: Transformed DataFrame
+        '''
+        # Print the skewness before transformation
+        print(f"Skewness of {column_name} before transformation: {df[column_name].skew()}")
+        
+        # Initialize PowerTransformer
+        power_transformer = PowerTransformer(method=method)
+        
+        # Fit and transform the specified column
+        df[[column_name]] = power_transformer.fit_transform(df[[column_name]])
+        
+        # Print the skewness after transformation
+        print(f"Skewness of {column_name} after transformation: {df[column_name].skew()}")
+        
+        # Display the transformed DataFrame
+        display(df)
+        
+        if inverse_transform:
+            # Reverse transform the transformed DataFrame
+            df[[column_name]] = power_transformer.inverse_transform(df[[column_name]])
+            print(f"Skewness of {column_name} after inverse transformation: {df[column_name].skew()}")
+            # Display the reversed transformed DataFrame
+            display(df)
+        
+        return df
+    
+    def treat_outliers(self, df: pd.DataFrame):
+        # Capping - change the outlier values to upper or lower limit values i.e. those outside of 1.5*IQR of the lower and upper quartiles
+        ''' 
+        Returns:
+        --------
+        dataframe
+            A Pandas DataFrame
+        ''' 
+        # select only the numeric columns in the DataFrame
+        new_df = df.select_dtypes('float64')
+       
+        for col in new_df:
+ 
+            q1 = new_df[col].quantile(0.25)
+            q3 = new_df[col].quantile(0.75) 
+            iqr = q3 - q1
+            lower_limit = q1 - 1.5 * iqr
+            upper_limit = q3 + 1.5 * iqr  
 
-        # fitting and transforming the model
-        df_yjt = pd.DataFrame(p_scaler.fit_transform(cols_to_transform))
-  
-        transformed_df = df_yjt.to_csv('df_yjt.csv')
-  
-        return transformed_df
+            new_df.loc[new_df[col]<=lower_limit, col] = lower_limit
+            new_df.loc[new_df[col]>=upper_limit, col] = upper_limit
+
+        return new_df 
 
 if __name__ == "__main__":
     
@@ -128,4 +171,8 @@ if __name__ == "__main__":
     new_df = data.impute_null_values(df)
 
     #new_df = data.log_transform_skewed_columns(df)
-    new_df = data.yjt_transform_skewed_columns(df)
+    for col in df:
+        new_df = data.transform_column(df, col, 'yeo-johnson')
+
+    
+    data.treat_outliers(new_df)
