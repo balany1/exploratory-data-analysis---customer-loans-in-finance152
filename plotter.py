@@ -35,18 +35,30 @@ class Plotter:
    def __init__(self, df:pd.DataFrame) -> None:
       self.df = df
    
-   def seenulls(self, df):
+   def seenulls(self, df:pd.DataFrame):
+    '''
+        Visualizes null values in a DataFrame using missingno package.
+        
+        Args:
+         -----------
+        - df (DataFrame): Input DataFrame
+    '''
+    msno.bar(df)
 
-      msno.bar(df)
-
-   def heatmapnulls(self, df):
-      
+   def heatmapnulls(self, df:pd.DataFrame):
+      '''
+        Visualizes null values in a DataFrame using missingno package.
+        
+        Args:
+         -----------
+        - df (DataFrame): Input DataFrame
+    '''
       msno.heatmap(df)
 
-   def impute_nulls(self,df):
+   def impute_nulls(self,df:pd.DataFrame):
       pass
 
-   def visualise_skewness(self, df):
+   def visualise_skewness(self, df:pd.DataFrame):
       '''
       
       This method plots the data to visualise the skew. It uses Seaborn's Histogram with KDE line plot to achieve this.       
@@ -90,7 +102,7 @@ class Plotter:
         '''
         This method is used to return subplots showing histograms in axes[0] and Q-Q subplots in axes[1] to compare the effect of log, box-cox and yoe-johnson transformations on skewness.
 
-        Parameters:
+        Args:
             DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column within the dataframe to which this method will be applied.
 
@@ -153,9 +165,13 @@ class Plotter:
         plt.tight_layout() # Adjust the padding between and around subplots.
         return plt.show()
    
+
    def visualise_outliers(self, df:pd.DataFrame):
         '''This method visualises the data to determine if the columns contain outliers. It uses Seaborn's Boxplot to achieve this.       
-              
+
+        Args:
+            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+
         Returns:
         --------
         plot
@@ -174,8 +190,32 @@ class Plotter:
         # Show the plot
         plt.tight_layout()
         return plt.show()
+   
 
+   def show_correlation_heatmap(self,df:pd.DataFrame):
+        '''This method visualises the collinearity of data in the dataset. It uses Seaborn's heatmap to achieve this.       
 
+        Args:
+            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+
+        Returns:
+        --------
+        plot
+            Seaborn's Correlation Heatmap
+        ''' 
+        
+        #select only the numeric columns in the DataFrame
+        df = df.select_dtypes(include=['float64'])
+
+        #print correlation of data
+        print(df.corr())
+
+        #generate heatmap for correlation
+        plt = sns.heatmap(df.corr(), cmap="YlGnBu")
+
+        # Show the plot
+        #return plt.show()
+   
 if __name__ == "__main__":
        
      

@@ -28,11 +28,13 @@ class DataTransform:
         '''
         This method is used to extract integers that are contained within strings in columns.
 
-        Parameters:
+        Args:
+        --------
             df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column to which this method will be applied.
 
         Returns:
+         --------
             df(pd.DataFrame): The updated DataFrame.
         '''
 
@@ -40,29 +42,114 @@ class DataTransform:
         # the second method casts the digits into the 'Int32' data type, this is because this type of integer is a nullable type of integer.
         return df
    
-    def convert_dates(self, df, date_column):
+    def convert_dates(self, df:pd.DataFrame, date_column: str):
+      '''
+        This method is used to convert designated columns to mmm-yyyy date format
+
+        Args:
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column to which this method will be applied.
+
+        Returns:
+         --------
+            df(pd.DataFrame): The updated DataFrame.
+        '''
       df[date_column] = pd.to_datetime(df[date_column], format="%b-%Y")
       return df
    
-    def cat_type(self, df, column):
+    def cat_type(self, df:pd.DataFrame, column:str):
+      '''
+        This method is used to esignated columns to category type
+
+        Args:
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column to which this method will be applied.
+
+        Returns:
+         --------
+            df(pd.DataFrame): The updated DataFrame.
+        '''
       df[column]= df[column].astype('category')
 
-    def num_type(self, df, column):
-      df[column] = df[column].astype(int)
+    def num_type(self, df:pd.DataFrame, column:str):
+       '''
+        This method is used to esignated columns to integer type
 
-    def float_type(self, df, column):
-      df[column] = df[column].astype(float)
+        Args:
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column to which this method will be applied.
 
-    def obj_type(self, df, column):
+        Returns:
+         --------
+            df(pd.DataFrame): The updated DataFrame.
+        '''
+       df[column] = df[column].astype(int)
+
+    def float_type(self, df:pd.DataFrame, column:str):
+       '''
+        This method is used to esignated columns to float type
+
+        Args:
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column to which this method will be applied.
+
+        Returns:
+         --------
+            df(pd.DataFrame): The updated DataFrame.
+        '''
+       df[column] = df[column].astype(float)
+
+    def obj_type(self, df:pd.DataFrame, column:str):
+      '''
+        This method is used to designated columns to object type
+
+        Args:
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column to which this method will be applied.
+
+        Returns:
+         --------
+            df(pd.DataFrame): The updated DataFrame.
+        '''
       df[column] = df[column].astype(object)
 
-    def bool_type(self, df, column):
+    def bool_type(self, df:pd.DataFrame, column:str):
+      '''
+        This method is used to designated columns to bool type
+
+        Args:
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column to which this method will be applied.
+
+        Returns:
+         --------
+            df(pd.DataFrame): The updated DataFrame.
+        '''
       df[column] = df[column].astype(bool)
    
    
-    def fill_blanks(self, df, column):
-      df[column]=  df[column].replace('N/A',np.NaN)
-      df[column] = df[column].replace(' ',np.NaN)
+    def fill_blanks(self, df:pd.DataFrame, column:str):
+
+       '''
+        This method is used to fill any blank values with numpy NaN enabling it to be converted to a different type
+
+        Args:
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column to which this method will be applied.
+
+        Returns:
+         --------
+            df(pd.DataFrame): The updated DataFrame.
+        '''
+       df[column]=  df[column].replace('N/A',np.NaN)
+       df[column] = df[column].replace(' ',np.NaN)
 
 
 if __name__ == "__main__":

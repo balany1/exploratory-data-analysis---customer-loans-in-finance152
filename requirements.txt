@@ -9,3 +9,4 @@ missingno
 seaborn
 scikit-learn
 statsmodels
+seaborn
