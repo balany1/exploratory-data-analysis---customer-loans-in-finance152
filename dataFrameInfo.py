@@ -18,7 +18,7 @@ class Data_FrameInfo:
       print(df_stats)
 
 
-   def df_shape(self, self,df:pd.DataFrame):
+   def df_shape(self,df:pd.DataFrame):
       '''
         This method computes statistics for numerical columns in the dataframe
 

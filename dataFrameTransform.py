@@ -216,6 +216,7 @@ class Data_FrameTransform:
                     if list_a[j] not in cols_to_drop:
                         cols_to_drop.append(list_a[j])
 
+        print(cols_to_drop)
         new_df = df.drop(columns=cols_to_drop)
 
         return new_df

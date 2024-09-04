@@ -11,41 +11,142 @@ from sqlalchemy import create_engine
 from sqlalchemy import inspect
 from statsmodels.graphics.gofplots import qqplot
 from matplotlib import pyplot as plt
+import plotly.express as px
 import seaborn as sns
 
 class Plotter:
       
-   '''
+    '''
     This class contains the methods which are used to visualise insights from the data.
 
-    Parameters:
-    -----------
+     Parameters:
+     -----------
     data_frame: DataFrame
         A Pandas DataFrame from which information will be generated.
 
-    Methods:
+     Methods:
     --------
-    visualise_nulls_impute()
+     visualise_nulls_impute()
         Visualises the data to check if all the null values have been imputed.
     
-    visualise_outliers()
+     visualise_outliers()
         Visualises the data to determine if the columns contain outliers.
-    '''    
+     '''    
    
-   def __init__(self, df:pd.DataFrame) -> None:
+    def __init__(self, df:pd.DataFrame) -> None:
       self.df = df
+
+    def histogram(self, DataFrame: pd.DataFrame, column_name: str):
+        
+        '''
+        This method plots a histogram for data within a column in the dataframe.
+
+        Parameters:
+            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column for which a histogram will be plotted.
+        
+        Returns:
+            plotly.graph_objects.Figure: A histogram plot of the data within 'column_name'.
+        '''
+
+        fig = px.histogram(DataFrame, column_name)
+        return fig.show()
+
+    def skewness_histogram(self, DataFrame: pd.DataFrame, column_name: str):
+        
+        '''
+        This method plots a histogram for data within a column in the dataframe with the skewness identified.
+
+        Parameters:
+            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column for which a histogram will be plotted.
+        
+        Returns:
+            matplotlib.axes._subplots.AxesSubplot: A histogram plot of the data within 'column_name' with skewness identified.
+        '''
+
+        histogram = sns.histplot(DataFrame[column_name],label="Skewness: %.2f"%(DataFrame[column_name].skew()) )
+        histogram.legend()
+        return histogram
+
+    def missing_matrix(self, DataFrame: pd.DataFrame):
+
+        '''
+        This method plots a matrix displaying missing or null data points within the DataFrame.
+        
+        Parameters:
+            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+
+        Returns:
+            matplotlib.axes._subplots.AxesSubplot: A matrix plot showing all the missing or null data points in each column in white.
+        '''
+
+        return msno.matrix(DataFrame)
+
+    def qqplot(self, DataFrame: pd.DataFrame, column_name: str):
+
+        '''
+        This method is used to return a Quantile-Quantile (Q-Q) plot of a column.
+
+        Parameters:
+            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+            column_name (str): The name of the column which will be plotted.
+
+        Returns:
+            matplotlib.pyplot.figure: a Q-Q plot of the column.
+        '''
+
+        qq_plot = qqplot(DataFrame[column_name] , scale=1 ,line='q') 
+        return plt.show()
+
+    def facet_grid_histogram(self, DataFrame: pd.DataFrame, column_names: list):
+
+        '''
+        This method is used to return a Facet Grid containing Histograms with the distribution drawn for a list of columns.
+
+        Parameters:
+            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+            column_names (list): A list of names of columns which will be plotted.
+
+        Returns:
+            facet_grid (sns.FacetGrid): A facetgrid containing the histogram plots of each of the variables.
+        '''
+
+        melted_df = pd.melt(DataFrame, value_vars=column_names) # Melt the dataframe to reshape it.
+        facet_grid = sns.FacetGrid(melted_df, col="variable",  col_wrap=3, sharex=False, sharey=False) # Create the facet grid
+        facet_grid = facet_grid.map(sns.histplot, "value", kde=True) # Map histogram onto each plot on grid.
+        return facet_grid
+
+    def facet_grid_box_plot(self, DataFrame: pd.DataFrame, column_names: list):
+
+        '''
+        This method is used to return a Facet Grid containing box-plots for a list of columns.
+
+        Parameters:
+            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+            column_names (list): A list of names of columns which will be plotted.
+
+        Returns:
+            facet_grid (sns.FacetGrid): A facetgrid containing the box-plots of each of the variables.
+        '''
+
+        melted_df = pd.melt(DataFrame, value_vars=column_names) # Melt the dataframe to reshape it.
+        facet_grid = sns.FacetGrid(melted_df, col="variable",  col_wrap=3, sharex=False, sharey=False) # Create the facet grid
+        facet_grid = facet_grid.map(sns.boxplot, "value", flierprops=dict(marker='x', markeredgecolor='red')) # Map box-plot onto each plot on grid.
+        return facet_grid 
    
-   def seenulls(self, df:pd.DataFrame):
-    '''
+
+    def seenulls(self, df:pd.DataFrame):
+        '''
         Visualizes null values in a DataFrame using missingno package.
         
         Args:
          -----------
         - df (DataFrame): Input DataFrame
-    '''
-    msno.bar(df)
+         '''
+        msno.bar(df)
 
-   def heatmapnulls(self, df:pd.DataFrame):
+    def heatmapnulls(self, df:pd.DataFrame):
       '''
         Visualizes null values in a DataFrame using missingno package.
         
@@ -55,14 +156,18 @@ class Plotter:
     '''
       msno.heatmap(df)
 
-   def impute_nulls(self,df:pd.DataFrame):
+    def impute_nulls(self,df:pd.DataFrame):
       pass
 
-   def visualise_skewness(self, df:pd.DataFrame):
+    def visualise_skewness(self, df:pd.DataFrame):
       '''
       
       This method plots the data to visualise the skew. It uses Seaborn's Histogram with KDE line plot to achieve this.       
-            
+
+      Args:
+      --------
+         df(pd.DataFrame): dataframe being worked on
+
       Returns:
       --------
       plot
@@ -82,13 +187,15 @@ class Plotter:
       plt.tight_layout()
       return plt.show()
 
-   def visualize_high_skew(self, df, high_skew_cols:list =[]):
+    def visualize_high_skew(self, df, high_skew_cols:list =[]):
       '''
       Visualizes skew in identified columns
 
       Args:
+      --------
          df(pd.DataFrame): dataframe being worked on
          high_skew_cols(List): list of highly skewed columns produced by the function
+
       '''
 
       for col in high_skew_cols:
@@ -97,16 +204,18 @@ class Plotter:
          qq_plot = qqplot(df[col] , scale=1 ,line='q', fit=True)
          plt.show()
  
-   def compare_skewness_transformations(self, df: pd.DataFrame, column_name: str):
+    def compare_skewness_transformations(self, df: pd.DataFrame, column_name: str):
         
         '''
         This method is used to return subplots showing histograms in axes[0] and Q-Q subplots in axes[1] to compare the effect of log, box-cox and yoe-johnson transformations on skewness.
 
         Args:
-            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column within the dataframe to which this method will be applied.
 
         Returns:
+        --------
             matplotlib.pyplot.subplots.figure: A plot containing subplots with histograms in axes[0] and Q-Q subplots in axes[1].
         '''
 
@@ -166,11 +275,12 @@ class Plotter:
         return plt.show()
    
 
-   def visualise_outliers(self, df:pd.DataFrame):
+    def visualise_outliers(self, df:pd.DataFrame):
         '''This method visualises the data to determine if the columns contain outliers. It uses Seaborn's Boxplot to achieve this.       
 
         Args:
-            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
 
         Returns:
         --------
@@ -192,11 +302,12 @@ class Plotter:
         return plt.show()
    
 
-   def show_correlation_heatmap(self,df:pd.DataFrame):
+    def show_correlation_heatmap(self,df:pd.DataFrame):
         '''This method visualises the collinearity of data in the dataset. It uses Seaborn's heatmap to achieve this.       
 
         Args:
-            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+        --------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
 
         Returns:
         --------
