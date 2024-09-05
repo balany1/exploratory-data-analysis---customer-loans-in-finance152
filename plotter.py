@@ -358,7 +358,34 @@ class Plotter:
 
         # Show the plot
         #return plt.show()
-   
+    
+    def bar_chart(self, independent_categories: list, dependent_variables: list, title: str=None, y_label: str=None, x_label: str=None):
+        
+        '''
+        This method is used to generate a bar chart plot of categorical data.
+
+        Args:
+        --------
+            independent_categories (list): The names of the categories in a list.
+            dependent_variables (list): The respective dependant variables in a list.
+            title (str): DEFAULT = None, the title of the plot.
+            y_label (str): DEFAULT = None, the label for the y-axis.
+            x_label (str): DEFAULT = None, the label for the x-axis.
+
+        Returns:
+            --------
+            matplotlib.pyplot.figure: a bar plot of the data.
+        '''
+        plt.figure(figsize=(16, 8))
+        sns.barplot(x=independent_categories, y=dependent_variables) # Generating the bar plot and setting the independant and dependant variables.
+        if y_label != None: # If a 'y_label' is provided.
+            plt.ylabel(y_label)
+        if x_label != None: # If a 'x_label' is provided.
+            plt.xlabel(x_label)
+        if title != None: # If a 'title' is provided.
+            plt.title(title)
+        return plt.show()
+        
 if __name__ == "__main__":
        
      
