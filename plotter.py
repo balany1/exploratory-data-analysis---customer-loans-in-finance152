@@ -36,101 +36,133 @@ class Plotter:
     def __init__(self, df:pd.DataFrame) -> None:
       self.df = df
 
-    def histogram(self, DataFrame: pd.DataFrame, column_name: str):
+    def histogram(self, df: pd.DataFrame, column_name: str):
         
         '''
         This method plots a histogram for data within a column in the dataframe.
 
-        Parameters:
-            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+        Args:
+         -----------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column for which a histogram will be plotted.
         
         Returns:
             plotly.graph_objects.Figure: A histogram plot of the data within 'column_name'.
         '''
 
-        fig = px.histogram(DataFrame, column_name)
+        fig = px.histogram(df, column_name)
         return fig.show()
+    
+    def pie_chart(self, labels: list, sizes: list, title: str=None):
 
-    def skewness_histogram(self, DataFrame: pd.DataFrame, column_name: str):
+        '''
+        This method is used to generate a bar chart plot of categorical data.
+
+        Args:
+         -----------
+            labels (list): The names of the categories in a list.
+            sizes (list): The respective dependant variables in a list.
+            title (str): DEFAULT = None, the title of the plot.
+
+        Returns:
+         -----------
+            matplotlib.pyplot.figure: a pie chart plot of the data.
+        '''
+
+        plt.pie(sizes, labels=labels, colors=['#66b3ff', '#ffff99', '#00FF00'], autopct='%1.1f%%', startangle=180) # Generate pie chart.
+        if title != None: # If a title is provided.
+            plt.title(title)
+        plt.show()
+
+    def skewness_histogram(self, df: pd.DataFrame, column_name: str):
         
         '''
         This method plots a histogram for data within a column in the dataframe with the skewness identified.
 
-        Parameters:
-            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+        Args:
+         -----------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column for which a histogram will be plotted.
         
         Returns:
+         -----------
             matplotlib.axes._subplots.AxesSubplot: A histogram plot of the data within 'column_name' with skewness identified.
         '''
 
-        histogram = sns.histplot(DataFrame[column_name],label="Skewness: %.2f"%(DataFrame[column_name].skew()) )
+        histogram = sns.histplot(df[column_name],label="Skewness: %.2f"%(df[column_name].skew()) )
         histogram.legend()
         return histogram
 
-    def missing_matrix(self, DataFrame: pd.DataFrame):
+    def missing_matrix(self, df: pd.DataFrame):
 
         '''
         This method plots a matrix displaying missing or null data points within the DataFrame.
         
-        Parameters:
-            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+        Args:
+         -----------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
 
         Returns:
+         -----------
             matplotlib.axes._subplots.AxesSubplot: A matrix plot showing all the missing or null data points in each column in white.
         '''
 
-        return msno.matrix(DataFrame)
+        return msno.matrix(df)
 
-    def qqplot(self, DataFrame: pd.DataFrame, column_name: str):
+    def qqplot(self, df: pd.DataFrame, column_name: str):
 
         '''
         This method is used to return a Quantile-Quantile (Q-Q) plot of a column.
 
-        Parameters:
-            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+        Args:
+         -----------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column which will be plotted.
 
         Returns:
+         -----------
             matplotlib.pyplot.figure: a Q-Q plot of the column.
         '''
 
-        qq_plot = qqplot(DataFrame[column_name] , scale=1 ,line='q') 
+        qq_plot = qqplot(df[column_name] , scale=1 ,line='q') 
         return plt.show()
 
-    def facet_grid_histogram(self, DataFrame: pd.DataFrame, column_names: list):
+    def facet_grid_histogram(self, df: pd.DataFrame, column_names: list):
 
         '''
         This method is used to return a Facet Grid containing Histograms with the distribution drawn for a list of columns.
 
-        Parameters:
-            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+        Args:
+         -----------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_names (list): A list of names of columns which will be plotted.
 
         Returns:
+         -----------
             facet_grid (sns.FacetGrid): A facetgrid containing the histogram plots of each of the variables.
         '''
 
-        melted_df = pd.melt(DataFrame, value_vars=column_names) # Melt the dataframe to reshape it.
+        melted_df = pd.melt(df, value_vars=column_names) # Melt the dataframe to reshape it.
         facet_grid = sns.FacetGrid(melted_df, col="variable",  col_wrap=3, sharex=False, sharey=False) # Create the facet grid
         facet_grid = facet_grid.map(sns.histplot, "value", kde=True) # Map histogram onto each plot on grid.
         return facet_grid
 
-    def facet_grid_box_plot(self, DataFrame: pd.DataFrame, column_names: list):
+    def facet_grid_box_plot(self, df: pd.DataFrame, column_names: list):
 
         '''
         This method is used to return a Facet Grid containing box-plots for a list of columns.
 
-        Parameters:
-            DataFrame (pd.DataFrame): The dataframe to which this method will be applied.
+        Args:
+         -----------
+            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_names (list): A list of names of columns which will be plotted.
 
         Returns:
+         -----------
             facet_grid (sns.FacetGrid): A facetgrid containing the box-plots of each of the variables.
         '''
 
-        melted_df = pd.melt(DataFrame, value_vars=column_names) # Melt the dataframe to reshape it.
+        melted_df = pd.melt(df, value_vars=column_names) # Melt the dataframe to reshape it.
         facet_grid = sns.FacetGrid(melted_df, col="variable",  col_wrap=3, sharex=False, sharey=False) # Create the facet grid
         facet_grid = facet_grid.map(sns.boxplot, "value", flierprops=dict(marker='x', markeredgecolor='red')) # Map box-plot onto each plot on grid.
         return facet_grid 
@@ -147,45 +179,45 @@ class Plotter:
         msno.bar(df)
 
     def heatmapnulls(self, df:pd.DataFrame):
-      '''
+        '''
         Visualizes null values in a DataFrame using missingno package.
         
         Args:
          -----------
         - df (DataFrame): Input DataFrame
-    '''
-      msno.heatmap(df)
+        '''
+        msno.heatmap(df)
 
     def impute_nulls(self,df:pd.DataFrame):
       pass
 
     def visualise_skewness(self, df:pd.DataFrame):
-      '''
-      
-      This method plots the data to visualise the skew. It uses Seaborn's Histogram with KDE line plot to achieve this.       
+        '''
+        
+        This method plots the data to visualise the skew. It uses Seaborn's Histogram with KDE line plot to achieve this.       
 
-      Args:
-      --------
-         df(pd.DataFrame): dataframe being worked on
+        Args:
+        --------
+            df(pd.DataFrame): dataframe being worked on
 
-      Returns:
-      --------
-      plot
-         Seaborn's Histogram with KDE line plot.
-      '''  
-      #select only the numeric columns in the DataFrame
-      df = df.select_dtypes(include=['float64'])
-      plt.figure(figsize=(18,14))
+        Returns:
+        --------
+        plot
+            Seaborn's Histogram with KDE line plot.
+        '''  
+        #select only the numeric columns in the DataFrame
+        df = df.select_dtypes(include=['float64'])
+        plt.figure(figsize=(18,14))
 
-      for i in list(enumerate(df.columns)):
-         fig_cols = 4
-         fig_rows = int(len(df.columns)/fig_cols) + 1
-         plt.subplot(fig_rows, fig_cols, i[0]+1)
-         sns.histplot(data = df[i[1]], kde=True)
+        for i in list(enumerate(df.columns)):
+            fig_cols = 4
+            fig_rows = int(len(df.columns)/fig_cols) + 1
+            plt.subplot(fig_rows, fig_cols, i[0]+1)
+            sns.histplot(data = df[i[1]], kde=True)
 
-      # Show the plot
-      plt.tight_layout()
-      return plt.show()
+        # Show the plot
+        plt.tight_layout()
+        return plt.show()
 
     def visualize_high_skew(self, df, high_skew_cols:list =[]):
       '''
