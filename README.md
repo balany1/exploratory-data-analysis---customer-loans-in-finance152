@@ -22,11 +22,11 @@ A method was also developed to normalise the dataset using seaborn and scipy pac
 
 Analysis was performed on the final dataset giving such example illustrations as below.
 
-![sample1](Analysis_Examples/sampleanalysis1.png)
-![sample2](Analysis_Examples/sampleanalysis2.png)
-![sample3](Analysis_Examples/sampleanalysis3.png)
-![sample4](Analysis_Examples/sampleanalysis4.png)
-![sample5](Analysis_Examples/sampleanalysis5.png)
+![sample1](Analysis_Examples/Sampleanalysis1.png)
+![sample2](Analysis_Examples/Sampleanalysis2.png)
+![sample3](Analysis_Examples/Sampleanalysis3.png)
+![sample4](Analysis_Examples/Sampleanalysis4.png)
+![sample5](Analysis_Examples/Sampleanalysis5.png)
 
 
 Installation instructions
