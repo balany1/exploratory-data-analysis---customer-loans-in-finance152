@@ -11,6 +11,9 @@ from pandas.api.types import is_float_dtype
 from pandas.api.types import is_int64_dtype
 
 class Data_FrameInfo:
+
+   def __init__(self) -> None:
+      pass
    
    def describe_dataframe(self, df:pd.DataFrame):
 
@@ -195,3 +198,5 @@ class Data_FrameInfo:
                high_skew_cols.append(col)
       
       return high_skew_cols
+   
+if __name__ == "__main__":

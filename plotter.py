@@ -388,7 +388,6 @@ class Plotter:
         
 if __name__ == "__main__":
        
-     
       import dataFrameInfo as dx
       df = pd.read_csv('loan_payments.csv')
       plotter = Plotter(df)

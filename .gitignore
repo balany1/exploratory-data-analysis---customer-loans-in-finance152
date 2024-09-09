@@ -9260,3 +9260,12 @@ __pycache__/data_Transform.cpython-39.pyc
 __pycache__/dataFrameInfo.cpython-39.pyc
 __pycache__/dataFrameTransform.cpython-39.pyc
 __pycache__/plotter.cpython-39.pyc
+loan_payments2.csv
+df_yjt.csv
+dfdropcorrelation.csv
+dfnonulls.csv
+dfnooutliers.csv
+dfnooutliers_zscore.csv
+dfnoskew.csv
+loan_payments.csv
+yjt_df.csv

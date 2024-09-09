@@ -264,3 +264,6 @@ if __name__ == "__main__":
 
     
     data.treat_outliers(new_df)
+
+
+
