@@ -12,113 +12,83 @@ from sqlalchemy import inspect
 
 class DataTransform:
    
-    def __init__(self) -> None:
-      pass
-     
-   
-    def set_data_frame(self, file_name):
-      
-      #read_csv_file
-      df = pd.read_csv(file_name)
-      #print(df.dtypes)
-      return df
+    def __init__(self, df: pd.DataFrame) -> None:
+      self.df = df
     
-    def extract_integer_from_string(self, df: pd.DataFrame, column_name: str):
-
-        '''
-        This method is used to extract integers that are contained within strings in columns.
-
-        Args:
-        --------
-            df (pd.DataFrame): The dataframe to which this method will be applied.
-            column_name (str): The name of the column to which this method will be applied.
-
-        Returns:
-         --------
-            df(pd.DataFrame): The updated DataFrame.
-        '''
-
-        df[column_name] = df[column_name].str.extract('(\d+)').astype('Int32') # The first method extracts any digits from the string in the desired column
-        # the second method casts the digits into the 'Int32' data type, this is because this type of integer is a nullable type of integer.
-        return df
    
-    def convert_dates(self, df:pd.DataFrame, date_column: str):
+    def convert_dates(self, date_column: str):
       '''
         This method is used to convert designated columns to mmm-yyyy date format
 
         Args:
         --------
-            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column to which this method will be applied.
 
         Returns:
          --------
             df(pd.DataFrame): The updated DataFrame.
         '''
-      df[date_column] = pd.to_datetime(df[date_column], format="%b-%Y")
-      return df
+      self.df[date_column] = pd.to_datetime(self.df[date_column], format="%b-%Y")
+      return self.df
    
-    def cat_type(self, df:pd.DataFrame, column:str):
+    def cat_type(self, column:str):
       '''
         This method is used to esignated columns to category type
 
         Args:
         --------
-            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column to which this method will be applied.
 
         Returns:
          --------
             df(pd.DataFrame): The updated DataFrame.
         '''
-      df[column]= df[column].astype('category')
+      self.df[column]= self.df[column].astype('category')
 
-    def num_type(self, df:pd.DataFrame, column:str):
+    def num_type(self, column:str):
        '''
         This method is used to esignated columns to integer type
 
         Args:
         --------
-            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column to which this method will be applied.
 
         Returns:
          --------
             df(pd.DataFrame): The updated DataFrame.
         '''
-       df[column] = df[column].astype(int)
+       self.df[column] = self.df[column].astype(int)
 
-    def float_type(self, df:pd.DataFrame, column:str):
+
+    def float_type(self, column:str):
        '''
         This method is used to esignated columns to float type
 
         Args:
         --------
-            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column to which this method will be applied.
 
         Returns:
          --------
             df(pd.DataFrame): The updated DataFrame.
         '''
-       df[column] = df[column].astype(float)
+       self.df[column] = self.df[column].astype(float)
 
-    def obj_type(self, df:pd.DataFrame, column:str):
+    def obj_type(self, column:str):
       '''
         This method is used to designated columns to object type
 
         Args:
         --------
-            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column to which this method will be applied.
 
         Returns:
          --------
             df(pd.DataFrame): The updated DataFrame.
         '''
-      df[column] = df[column].astype(object)
+      self.df[column] = self.df[column].astype(object)
 
-    def bool_type(self, df:pd.DataFrame, column:str):
+    def bool_type(self, column:str):
       '''
         This method is used to designated columns to bool type
 
@@ -131,25 +101,24 @@ class DataTransform:
          --------
             df(pd.DataFrame): The updated DataFrame.
         '''
-      df[column] = df[column].astype(bool)
+      self.df[column] = self.df[column].astype(bool)
    
    
-    def fill_blanks(self, df:pd.DataFrame, column:str):
+    def fill_blanks(self, column:str):
 
        '''
         This method is used to fill any blank values with numpy NaN enabling it to be converted to a different type
 
         Args:
         --------
-            df (pd.DataFrame): The dataframe to which this method will be applied.
             column_name (str): The name of the column to which this method will be applied.
 
         Returns:
          --------
             df(pd.DataFrame): The updated DataFrame.
         '''
-       df[column]=  df[column].replace('N/A',np.NaN)
-       df[column] = df[column].replace(' ',np.NaN)
+       self.df[column]=  self.df[column].replace('N/A',np.NaN)
+       self.df[column] = self.df[column].replace(' ',np.NaN)
 
 
 if __name__ == "__main__":
@@ -164,20 +133,24 @@ if __name__ == "__main__":
     bool_data = ['payment_plan']
     date_data = ['issue_date', 'earliest_credit_line', 'last_payment_date', 'next_payment_date', 'last_credit_pull_date']
 
-    data = DataTransform()
+    df.rename(columns={"term": "term(mths)"},inplace=True)
+    df['term(mths)'] = df['term(mths)'].str.replace("months", " ")
+
+    data = DataTransform(df)
 
     for col in cat_data:
-        data.cat_type(df,col)
+        data.cat_type(col)
 
     for col in int_data:
-        data.num_type(df,col)
+        data.num_type(col)
 
     for col in float_data:
-        data.float_type(df,col)
+        data.float_type(col)
 
     for col in bool_data:
-        data.bool_type(df,col)
+        data.bool_type(col)
 
     for col in date_data:
-        data.convert_dates(df,col)
+        data.convert_dates(col)
 
+    data.fill_blanks('loan_amount')
